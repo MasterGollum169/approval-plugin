@@ -1,8 +1,8 @@
 name: ApprovalPlugin
 version: 1.0
 main: com.davis.approvalplugin.Main
-api-version: 1.21
+api-version: '1.21'
 commands:
-approve:
-description: Approva un giocatore bloccato
-usage: /approve <player>
+  approve:
+    description: Approva un giocatore bloccato
+    usage: /approve <player>
