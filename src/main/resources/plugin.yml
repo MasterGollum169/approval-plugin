@@ -6,3 +6,9 @@ commands:
   approve:
     description: Approva un giocatore bloccato
     usage: /approve <player>
+    permission: approvalplugin.approve
+
+permissions:
+  approvalplugin.approve:
+    description: Permette di approvare giocatori
+    default: op
