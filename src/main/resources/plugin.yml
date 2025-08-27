@@ -3,12 +3,26 @@ version: 1.0
 main: com.davis.approvalplugin.Main
 api-version: '1.21'
 commands:
-  approve:
-    description: Approva un giocatore bloccato
-    usage: /approve <player>
-    permission: approvalplugin.approve
+  unblock:
+    description: Unblock/approve a player
+    usage: /unblock <player>
+    permission: approvalplugin.unblock
+  block:
+    description: Force block a player
+    usage: /block <player>
+    permission: approvalplugin.block
+  approvallist:
+    description: Show online players and their approval status
+    usage: /approvallist
+    permission: approvalplugin.list
 
 permissions:
-  approvalplugin.approve:
-    description: Permette di approvare giocatori
+  approvalplugin.unblock:
+    description: Allows unblocking players
+    default: op
+  approvalplugin.block:
+    description: Allows forcing a player to be blocked
+    default: op
+  approvalplugin.list:
+    description: Allows viewing the approval list
     default: op
