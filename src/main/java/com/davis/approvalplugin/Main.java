@@ -3,6 +3,7 @@ package com.davis.approvalplugin;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -20,6 +21,7 @@ public class Main extends JavaPlugin implements Listener {
 
     private final Set<String> approvedPlayers = new HashSet<>();
     private final String adminName = "Davis1070"; // tuo username
+    private final String APPROVE_PERMISSION = "approvalplugin.approve";
 
     @Override
     public void onEnable() {
@@ -29,16 +31,25 @@ public class Main extends JavaPlugin implements Listener {
         // registra il comando /approve (controlla null per sicurezza)
         if (getCommand("approve") != null) {
             getCommand("approve").setExecutor((sender, command, label, args) -> {
+                // Controllo permessi: console, adminName, OP o perm node
+                if (!isAllowedToApprove(sender)) {
+                    sender.sendMessage(ChatColor.RED + "Non hai il permesso di usare questo comando.");
+                    return true;
+                }
+
                 if (args.length != 1) {
                     sender.sendMessage(ChatColor.RED + "Uso corretto: /approve <player>");
                     return true;
                 }
+
                 String target = args[0];
                 approvedPlayers.add(target.toLowerCase());
+
                 Player p = Bukkit.getPlayerExact(target);
                 if (p != null) {
                     unblockPlayer(p);
                 }
+
                 sender.sendMessage(ChatColor.GREEN + "Hai approvato " + target);
                 return true;
             });
@@ -55,12 +66,32 @@ public class Main extends JavaPlugin implements Listener {
         getLogger().info("ApprovalPlugin disattivato.");
     }
 
+    /**
+     * Controlla se il sender è autorizzato ad usare /approve.
+     * Console è autorizzata automaticamente.
+     */
+    private boolean isAllowedToApprove(CommandSender sender) {
+        if (!(sender instanceof Player)) {
+            // Console è autorizzata
+            return true;
+        }
+
+        Player player = (Player) sender;
+
+        // AdminName ha sempre priorità
+        if (player.getName().equalsIgnoreCase(adminName)) return true;
+
+        // OP o perm node
+        if (player.isOp()) return true;
+        return player.hasPermission(APPROVE_PERMISSION);
+    }
+
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
 
         if (player.getName().equalsIgnoreCase(adminName)) {
-            return; // tu sei libero
+            return; // l'admin è sempre libero
         }
 
         if (approvedPlayers.contains(player.getName().toLowerCase())) {
